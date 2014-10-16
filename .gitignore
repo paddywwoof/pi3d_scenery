@@ -55,3 +55,6 @@ target/
 
 # pickle files
 *.pkl
+
+# the demo.py file
+demo.py
