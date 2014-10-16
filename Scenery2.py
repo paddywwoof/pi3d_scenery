@@ -46,9 +46,9 @@ flatsh = pi3d.Shader("uv_flat")
 FOG = ((0.3, 0.3, 0.41, 0.99), 500.0)
 TFOG = ((0.3, 0.3, 0.4, 0.95), 300.0)
 
-#from alpine import *
+from alpine import *
 #from karst import *
-from fjords import *
+#from fjords import *
 
 try:
   f = open(sc.path + '/map00.pkl', 'r') #do this once to create the pickled objects
@@ -215,7 +215,7 @@ while DISPLAY.loop_running():
       force += df * factor_1
       bias = 0.1 if (vel < MINV * 10.0) else 0.0
       rvel = (dz * n_x - dx * n_z) * factor_2 + bias
-      tvel = (-df * 120.0 - tilt) * 0.002
+      tvel = (-df * 100.0 - tilt + 15.0) * 0.002
       if factor_1 == 0: # special case for maximum repel i.e. hit shore
         if df < 0:
           #vel = 0.0

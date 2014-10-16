@@ -22,11 +22,11 @@ for i in range(NX):
   for j in range(NZ):
     sc.scenery_list['rock_elev{}{}'.format(i, j)] = SceneryItem(
           (0.5 + i) * MSIZE, 45.0, (0.5 + j) * MSIZE, ['rock_tex{}{}'.format(i, j), 
-          'rocktile2'], shader, 128, height=500.0, priority=2, threshold=1500.0)
+          'rocktile2'], shader, 128, height=500.0, priority=1, threshold=1500.0)
     sc.scenery_list['map{}{}'.format(i, j)] = SceneryItem(
           (0.5 + i) * MSIZE, 0.0, (0.5 + j) * MSIZE, ['snow_tex{}{}'.format(i, j),
           'n_norm000', 'stars3'], shinesh, 128.0, 0.05, height=500.0, alpha=0.99,
-          priority=1, threshold=950.0)
+          priority=2, threshold=950.0)
     sc.scenery_list['tree03'] = SceneryItem(3400, 0, 4150, ['hornbeam2'], shader, texture_flip=True, priority=4, 
                               put_on='map34', threshold = 650.0,
                               model_details={'model':'tree', 'w':400, 'd':400, 'n':40, 'maxs':5.0, 'mins':3.0})
