@@ -46,9 +46,9 @@ flatsh = pi3d.Shader("uv_flat")
 FOG = ((0.3, 0.3, 0.41, 0.99), 500.0)
 TFOG = ((0.3, 0.3, 0.4, 0.95), 300.0)
 
-from alpine import *
+#from alpine import *
 #from karst import *
-#from fjords import *
+from fjords import *
 
 try:
   f = open(sc.path + '/map00.pkl', 'r') #do this once to create the pickled objects
