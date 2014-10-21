@@ -28,20 +28,23 @@ WHICH TAKES A COUPLE OF MINUTES ON THE RPi. DON'T START PANICING UNTIL
 IT SEEMS TO HAVE BEEN DEAD FOR TEN MINUTES OR SO!!!
 ''')
 
-import RPi.GPIO as GPIO
 
 pulse_count = 0
 
 # Setup GPIO input
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(4, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+try:
+  import RPi.GPIO as GPIO
+  GPIO.setmode(GPIO.BCM)
+  GPIO.setup(4, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
-def hall_pulse(channel):
-  global pulse_count
-  pulse_count += 1
+  def hall_pulse(channel):
+    global pulse_count
+    pulse_count += 1
 
-GPIO.add_event_detect(4, GPIO.FALLING, callback=hall_pulse, bouncetime=50)
-
+  GPIO.add_event_detect(4, GPIO.FALLING, callback=hall_pulse, bouncetime=50)
+except Exception as e:
+  print('RPi.GPIO not here you can simulate pulses with the w key. Ex={}'.format(e))
+  
 from pi3d.util.Scenery import Scene, SceneryItem
 
 # Setup display and initialise pi3d
@@ -60,8 +63,8 @@ flatsh = pi3d.Shader("uv_flat")
 FOG = ((0.3, 0.3, 0.41, 0.99), 500.0)
 TFOG = ((0.3, 0.3, 0.4, 0.95), 300.0)
 
-#from alpine import *
-from karst import *
+from alpine import *
+#from karst import *
 #from fjords import *
 
 try:
@@ -90,6 +93,7 @@ lastchk = time.time()
 cleartm = 10.0
 lastclear = lastchk
 nextslope = lastchk + chktm
+starttm = lastchk
 #physics
 MASS = 500.0
 DRAGF = 15.0
@@ -131,9 +135,9 @@ CAMERA = pi3d.Camera(lens=(1.0, 10000.0, 55.0, 1.6))
 #this block added for fast text changing
 CAMERA2D = pi3d.Camera(is_3d=False)
 myfont = pi3d.Font('fonts/FreeMonoBoldOblique.ttf', color = (255, 230, 128, 255),
-                        codepoints='0123456789. -goldoz:')
+                        codepoints='0123456789. -goldoz:msN')
 myfont.blend = True
-tstring = "gold {:05d}oz ".format(score)
+tstring = "gold {:05d}oz {:02d}m{:02d}s -{:4.1f}N {:3.1f} ".format(score, 0, 0, 0.0, 0.0)
 lasttm = 0.0
 tdel = 0.23
 mystring = pi3d.String(camera=CAMERA2D, font=myfont, is_3d=False, string=tstring)
@@ -184,8 +188,6 @@ while DISPLAY.loop_running():
     if coin_dist < 0:
       score += 150 + coin_count
       coin_count = 0
-      newtstring = "gold {:05d}oz ".format(score)
-      mystring.quick_change(newtstring)
   else: ####################### write up score
     mystring.draw()
     if random.random() < 0.0005:
@@ -198,7 +200,7 @@ while DISPLAY.loop_running():
   force *= DECAY
   rot += rvel
   tilt += tvel
-  acc = (force - vel * vel * DRAGF * (15.0 if FRICTION else 2.0)) / MASS
+  acc = (force - vel * vel * DRAGF * (15.0 if FRICTION else 1.5)) / MASS
   vel += acc * 0.05 # fairly arbitary time per frame
   if vel < MINV:
     vel = MINV
@@ -238,6 +240,11 @@ while DISPLAY.loop_running():
           force = 0.0
         else:
           rvel = 0.0
+      secs = tm - starttm
+      mins = int(secs / 60.0)
+      secs = int(secs - mins * 60)
+      newtstring = "gold {:05d}oz {:02d}m{:02d}s {:4.1f}N {:3.1f}".format(score, mins, secs, force, vel * 10)
+      mystring.quick_change(newtstring)
       nextslope = tm + chktm
       #print(force, vel, MINV, factor_1, xm, zm)
 
@@ -245,8 +252,9 @@ while DISPLAY.loop_running():
   k = mykeys.read()
   if k >-1:
     if k==ord('w'):  #key W
-      force = MAXF
-      laststroke = tm
+      #force = MAXF
+      #laststroke = tm
+      pulse_count += 1
     elif k==ord('s'):  #kry S
       xm += math.sin(math.radians(rot)) * 2.0
       zm -= math.cos(math.radians(rot)) * 2.0
