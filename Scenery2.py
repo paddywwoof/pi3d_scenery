@@ -28,6 +28,20 @@ WHICH TAKES A COUPLE OF MINUTES ON THE RPi. DON'T START PANICING UNTIL
 IT SEEMS TO HAVE BEEN DEAD FOR TEN MINUTES OR SO!!!
 ''')
 
+import RPi.GPIO as GPIO
+
+pulse_count = 0
+
+# Setup GPIO input
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(4, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+
+def hall_pulse(channel):
+  global pulse_count
+  pulse_count += 1
+
+GPIO.add_event_detect(4, GPIO.FALLING, callback=hall_pulse, bouncetime=50)
+
 from pi3d.util.Scenery import Scene, SceneryItem
 
 # Setup display and initialise pi3d
@@ -47,8 +61,8 @@ FOG = ((0.3, 0.3, 0.41, 0.99), 500.0)
 TFOG = ((0.3, 0.3, 0.4, 0.95), 300.0)
 
 #from alpine import *
-#from karst import *
-from fjords import *
+from karst import *
+#from fjords import *
 
 try:
   f = open(sc.path + '/map00.pkl', 'r') #do this once to create the pickled objects
@@ -184,7 +198,7 @@ while DISPLAY.loop_running():
   force *= DECAY
   rot += rvel
   tilt += tvel
-  acc = (force - vel * vel * DRAGF * (10.0 if FRICTION else 1.0)) / MASS
+  acc = (force - vel * vel * DRAGF * (15.0 if FRICTION else 2.0)) / MASS
   vel += acc * 0.05 # fairly arbitary time per frame
   if vel < MINV:
     vel = MINV
@@ -203,6 +217,8 @@ while DISPLAY.loop_running():
       ym = fht + avhgt
       FRICTION = True
     if tm > nextslope:
+      force = MAXF * pulse_count * 0.4
+      pulse_count *= 0.5
       if not FRICTION: ### on snow, grass, water = cmap
         n_x, n_z = cn[0], cn[2]
         factor_1 = SMOOTH_1
@@ -223,7 +239,7 @@ while DISPLAY.loop_running():
         else:
           rvel = 0.0
       nextslope = tm + chktm
-      #print(vel, MINV, factor_1, xm, zm)
+      #print(force, vel, MINV, factor_1, xm, zm)
 
   #Press ESCAPE to terminate
   k = mykeys.read()

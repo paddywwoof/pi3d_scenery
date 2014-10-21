@@ -8,8 +8,8 @@ from pi3d.util.Scenery import Scene, SceneryItem
 MSIZE = 1000
 NX = 5
 NZ = 5
-SMOOTH_1 = 100
-SMOOTH_2 = -0.1
+SMOOTH_1 = 70
+SMOOTH_2 = -0.3
 ROUGH_1 = 20
 ROUGH_2 = 0.2 # turn up hill on rock
 # load shaders
