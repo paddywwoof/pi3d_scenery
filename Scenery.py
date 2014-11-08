@@ -52,7 +52,7 @@ try:
       if menu.active:
         menu.advance()
       else:
-        rvel -= 5
+        rvel += 1
 
   def right_button(channel):
     global menu, rvel
@@ -62,11 +62,11 @@ try:
       if menu.active:
         menu.active = False
       else:
-        rvel += 5
+        rvel -= 1
 
   GPIO.add_event_detect(4, GPIO.FALLING, callback=hall_pulse, bouncetime=50)
-  GPIO.add_event_detect(14, GPIO.FALLING, callback=left_button, bouncetime=50)
-  GPIO.add_event_detect(15, GPIO.FALLING, callback=right_button, bouncetime=50)
+  GPIO.add_event_detect(14, GPIO.FALLING, callback=left_button, bouncetime=200)
+  GPIO.add_event_detect(15, GPIO.FALLING, callback=right_button, bouncetime=200)
 except Exception as e:
   print('RPi.GPIO not here you can simulate pulses with the w key. Ex={}'.format(e))
 
