@@ -36,16 +36,58 @@ pulse_count = 0
 try:
   import RPi.GPIO as GPIO
   GPIO.setmode(GPIO.BCM)
-  GPIO.setup(4, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+  GPIO.setup(4, GPIO.IN, pull_up_down = GPIO.PUD_UP) # pin 7
+  GPIO.setup(14, GPIO.IN, pull_up_down = GPIO.PUD_UP) # pin 8
+  GPIO.setup(15, GPIO.IN, pull_up_down = GPIO.PUD_UP) # pin 10
 
   def hall_pulse(channel):
     global pulse_count
     pulse_count += 1
 
+  def left_button(channel):
+    global menu, rvel
+    if GPIO.input(15) == 0: # other button also pressed
+      menu.activate()
+    else:
+      if menu.active:
+        menu.advance()
+      else:
+        rvel -= 5
+
+  def right_button(channel):
+    global menu, rvel
+    if GPIO.input(14) == 0: # other button also pressed
+      menu.activate()
+    else:
+      if menu.active:
+        menu.active = False
+      else:
+        rvel += 5
+
   GPIO.add_event_detect(4, GPIO.FALLING, callback=hall_pulse, bouncetime=50)
+  GPIO.add_event_detect(14, GPIO.FALLING, callback=left_button, bouncetime=50)
+  GPIO.add_event_detect(15, GPIO.FALLING, callback=right_button, bouncetime=50)
 except Exception as e:
   print('RPi.GPIO not here you can simulate pulses with the w key. Ex={}'.format(e))
-  
+
+class Menu(object):
+  def __init__(self):
+    self.active = False # when selection > 0 and not active then do something
+    self.selection = 0
+    self.options = ['cancel', 'zero stats', 'alpine', 'fjords', 'karst', 'quit']
+
+  def activate(self):
+    self.active = True
+
+  def deactivate(self):
+    self.active = False
+    self.selection = 0
+
+  def advance(self):
+    self.selection = (1 + self.selection) % len(self.options)
+
+menu = Menu()
+
 from pi3d.util.Scenery import Scene, SceneryItem
 
 # Setup display and initialise pi3d
@@ -135,7 +177,7 @@ CAMERA = pi3d.Camera(lens=(1.0, 10000.0, 55.0, 1.6))
 #this block added for fast text changing
 CAMERA2D = pi3d.Camera(is_3d=False)
 myfont = pi3d.Font('fonts/FreeMonoBoldOblique.ttf', color = (255, 230, 128, 255),
-                        codepoints='0123456789. -goldoz:mskph')
+                        codepoints='0123456789abcdefghijklmnopqrstuvwxyz. -:')
 myfont.blend = True
 tstring = "gold {:05d}oz {:02d}m{:02d}s -{:4.1f}km {:3.1f}kph ".format(score, 0, 0, 0.0, 0.0)
 lasttm = 0.0
@@ -170,7 +212,10 @@ while DISPLAY.loop_running():
 
   s_flg = True
   for s in sc.draw_list: ###### draw scenery
-    s.shape.draw()
+    try:
+      s.shape.draw()
+    except Exception as e:
+      print('texture loading in thread caught out by switch to new scenery!')
     s.last_drawn = tm
     s_flg = False
   if s_flg: ################### intro screen
@@ -244,11 +289,39 @@ while DISPLAY.loop_running():
       secs = tm - starttm
       mins = int(secs / 60.0)
       secs = int(secs - mins * 60)
-      newtstring = "gold {:05d}oz {:02d}m{:02d}s {:4.1f}km {:3.1f}kph".format(score, mins, secs, dist, vel * 10)
+      if menu.active:
+        newtstring = menu.options[menu.selection]
+      else:
+        newtstring = "gold {:05d}oz {:02d}m{:02d}s {:4.1f}km {:3.1f}kph".format(score, mins, secs, dist, vel * 10)
       mystring.quick_change(newtstring)
       nextslope = tm + chktm
       #print(force, vel, MINV, factor_1, xm, zm)
 
+  if menu.selection > 0 and not menu.active: # i.e. a menu option must have been selected
+    # zero stats
+    score = 0
+    starttm = time.time()
+    dist = 0.0
+    if menu.selection > 1:
+      sc.draw_list = []
+      for key in sc.scenery_list:
+        s_item = sc.scenery_list[key]
+        s_item.status = 0
+        s_item.shape = None
+      cmap = None
+      fmap = None
+      print(sc)
+      if menu.selection == 2:
+        from alpine import *
+      elif menu.selection == 3:
+        from fjords import *
+      elif menu.selection == 4:
+        from karst import *
+      else:
+        DISPLAY.stop()
+        break
+    menu.selection = 0
+        
   #Press ESCAPE to terminate
   k = mykeys.read()
   if k >-1:
@@ -262,13 +335,18 @@ while DISPLAY.loop_running():
       if cmap:
         ym = cmap.calcHeight(xm, zm) + avhgt
     elif k==ord("'"):   #key '
-      tilt -= 2.0
+      cmap = None
+      fmap = None
+      from fjords import *
     elif k==ord('/'):   #key /
-      tilt += 2.0
+      cmap = None
+      fmap = None
+      from alpine import *
     elif k==ord('a'):   #key A
-      rot -= 2
+      menu.activate()
+      menu.advance()
     elif k==ord('d'):  #key D
-      rot += 2
+      menu.active = False
     elif k==27:  #Escape key
       mykeys.close()
       #mymouse.stop()
