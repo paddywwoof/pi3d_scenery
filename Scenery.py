@@ -88,7 +88,7 @@ class Menu(object):
 
 menu = Menu()
 
-from pi3d.util.Scenery import Scene, SceneryItem
+from pi3d.util.Scenery import Scene, SceneryItem, QDOWN
 
 # Setup display and initialise pi3d
 DISPLAY = pi3d.Display.create()
@@ -303,14 +303,10 @@ while DISPLAY.loop_running():
     starttm = time.time()
     dist = 0.0
     if menu.selection > 1:
-      sc.draw_list = []
-      for key in sc.scenery_list:
-        s_item = sc.scenery_list[key]
-        s_item.status = 0
-        s_item.shape = None
       cmap = None
       fmap = None
-      print(sc)
+      QDOWN.put(['STOP'])
+      sc.thr.join()
       if menu.selection == 2:
         from alpine import *
       elif menu.selection == 3:
@@ -352,3 +348,7 @@ while DISPLAY.loop_running():
       #mymouse.stop()
       DISPLAY.stop()
       break
+try:
+  GPIO.cleanup()
+except:
+  pass # GPIO wasn't loaded!
