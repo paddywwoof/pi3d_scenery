@@ -8,6 +8,8 @@ from pi3d.util.Scenery import Scene, SceneryItem
 MSIZE = 1000
 NX = 5
 NZ = 5
+FOG = ((0.3, 0.3, 0.41, 0.99), 500.0)
+TFOG = ((0.3, 0.3, 0.4, 0.95), 300.0)
 SMOOTH_1 = 50
 SMOOTH_2 = -0.4
 ROUGH_1 = 20
@@ -49,3 +51,10 @@ for i in range(NX):
     sc.scenery_list['barn06'] = SceneryItem(500, 0, 500, ['barn2'], shader, texture_flip=True, priority=4, 
                               put_on='map00', threshold = 650.0,
                               model_details={'model':'barn2', 'w':800, 'd':800, 'n':16, 'maxs':1.0, 'mins':1.0})
+
+
+try:
+  f = open(sc.path + '/map00.pkl', 'r') #do this once to create the pickled objects
+  f.close()
+except IOError:
+  sc.do_pickle(FOG)

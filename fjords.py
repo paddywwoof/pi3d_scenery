@@ -8,6 +8,8 @@ from pi3d.util.Scenery import Scene, SceneryItem
 MSIZE = 1000
 NX = 5
 NZ = 5
+FOG = ((0.3, 0.3, 0.41, 0.99), 500.0)
+TFOG = ((0.3, 0.3, 0.4, 0.95), 300.0)
 SMOOTH_1 = 100
 SMOOTH_2 = -0.2
 ROUGH_1 = 0 # special behaviour
@@ -36,3 +38,10 @@ for i in range(5):
     sc.scenery_list['tree03'] = SceneryItem(3400, 0, 4150, ['hornbeam2'], shader, texture_flip=True, priority=4, 
                               put_on='rock_elev34', threshold = 650.0,
                               model_details={'model':'tree', 'w':100, 'd':50, 'n':20, 'maxs':6.0, 'mins':2.0})
+
+
+try:
+  f = open(sc.path + '/map00.pkl', 'r') #do this once to create the pickled objects
+  f.close()
+except IOError:
+  sc.do_pickle(FOG)

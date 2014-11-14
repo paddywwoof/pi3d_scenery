@@ -95,24 +95,11 @@ DISPLAY = pi3d.Display.create()
 DISPLAY.set_background(0.5, 0.4, 0.6,1.0)      # r,g,b,alpha
 # yellowish directional light blueish ambient light
 pi3d.Light(lightpos=(1, -1, -3), lightcol =(0.7, 0.7, 0.6), lightamb=(0.4, 0.3, 0.5))
-
-MSIZE = 1000
-NX = 5
-NZ = 5
     
 # load shaders
 flatsh = pi3d.Shader("uv_flat")
 
-FOG = ((0.3, 0.3, 0.41, 0.99), 500.0)
-TFOG = ((0.3, 0.3, 0.4, 0.95), 300.0)
-
-from fjords import *
-
-try:
-  f = open(sc.path + '/map00.pkl', 'r') #do this once to create the pickled objects
-  f.close()
-except IOError:
-  sc.do_pickle(FOG)
+from karst import *
 
 #myecube = pi3d.EnvironmentCube(900.0,"HALFCROSS")
 ectex = pi3d.loadECfiles("textures/ecubes","sbox")
@@ -166,6 +153,7 @@ ym = 200.0
 coin_dist = COIN_TARGET
 coin_count = 0
 score = 0
+intro_count = 0
 
 fmap = None
 cmap = None
@@ -218,11 +206,12 @@ while DISPLAY.loop_running():
       print('texture loading in thread caught out by switch to new scenery!')
     s.last_drawn = tm
     s_flg = False
-  if s_flg: ################### intro screen
+  if s_flg or intro_count < 200: ################### intro screen
     skidoo.position(xm + dx * 15, ym, zm + dz * 15)
     skidoo.rotateIncX(0.1)
     skidoo.rotateIncY(1.5)
     skidoo.draw()
+    intro_count += 1
   if coin_count > 0: ########## coin chasing
     coin.position(xm + dx * coin_dist, ym + 0.15 * coin_dist, zm + dz * coin_dist)
     spinsp = 75.0 / coin_count if coin_count < 150 else 0.5
@@ -250,7 +239,6 @@ while DISPLAY.loop_running():
   if vel < MINV:
     vel = MINV
   dist += (vel / 4000.0)
-  #print('f{:.2f} a{:.2f} v{:.2f}'.format(force, acc, vel))
   dx = -math.sin(math.radians(rot))
   dz = math.cos(math.radians(rot))
   xm += dx * vel
@@ -298,11 +286,12 @@ while DISPLAY.loop_running():
       #print(force, vel, MINV, factor_1, xm, zm)
 
   if menu.selection > 0 and not menu.active: # i.e. a menu option must have been selected
-    # zero stats
-    score = 0
-    starttm = time.time()
-    dist = 0.0
-    if menu.selection > 1:
+    if menu.selection == 1:
+      # zero stats
+      score = 0
+      starttm = time.time()
+      dist = 0.0
+    elif menu.selection > 1:
       cmap = None
       fmap = None
       QDOWN.put(['STOP'])
@@ -316,6 +305,10 @@ while DISPLAY.loop_running():
       else:
         DISPLAY.stop()
         break
+      skidoo = pi3d.Model(file_string=sc.path + '/skidoo.obj')
+      skidoo.set_shader(shader)
+
+    intro_count = 0
     menu.selection = 0
         
   #Press ESCAPE to terminate
