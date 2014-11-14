@@ -29,15 +29,15 @@ for i in range(5):
           (0.5 + i) * MSIZE, 40.0, (0.5 + j) * MSIZE, ['n_norm000', 'stars3'], 
           matsh, 32.0, 0.6, height=10.0, alpha=0.8, priority=2, threshold=950.0)
           
-    sc.scenery_list['tree01'] = SceneryItem(1680, 0, 4300, ['tree2'], shader, texture_flip=True, priority=10, 
-                              put_on='rock_elev14', threshold = 650.0,
-                              model_details={'model':'tree', 'w':150, 'd':100, 'n':15, 'maxs':6.0, 'mins':1.0})
-    sc.scenery_list['tree02'] = SceneryItem(1750, 0, 4300, ['tree1'], shader, texture_flip=True, priority=5, 
-                              put_on='rock_elev14', threshold = 650.0,
-                              model_details={'model':'tree', 'w':200, 'd':100, 'n':10, 'maxs':5.0, 'mins':3.0})
-    sc.scenery_list['tree03'] = SceneryItem(3400, 0, 4150, ['hornbeam2'], shader, texture_flip=True, priority=4, 
-                              put_on='rock_elev34', threshold = 650.0,
-                              model_details={'model':'tree', 'w':100, 'd':50, 'n':20, 'maxs':6.0, 'mins':2.0})
+sc.scenery_list['tree01'] = SceneryItem(1680, 0, 4300, ['tree2'], shader, texture_flip=True, priority=10, 
+                          put_on='rock_elev14', threshold = 650.0,
+                          model_details={'model':'tree', 'w':150, 'd':100, 'n':15, 'maxs':6.0, 'mins':1.0})
+sc.scenery_list['tree02'] = SceneryItem(1750, 0, 4300, ['tree1'], shader, texture_flip=True, priority=5, 
+                          put_on='rock_elev14', threshold = 650.0,
+                          model_details={'model':'tree', 'w':200, 'd':100, 'n':10, 'maxs':5.0, 'mins':3.0})
+sc.scenery_list['tree03'] = SceneryItem(3400, 0, 4150, ['hornbeam2'], shader, texture_flip=True, priority=4, 
+                          put_on='rock_elev34', threshold = 650.0,
+                          model_details={'model':'tree', 'w':100, 'd':50, 'n':20, 'maxs':6.0, 'mins':2.0})
 
 
 try:
