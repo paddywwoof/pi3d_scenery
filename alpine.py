@@ -15,9 +15,7 @@ SMOOTH_2 = -0.3
 ROUGH_1 = 20
 ROUGH_2 = 0.2 # turn up hill on rock
 # load shaders
-shader = pi3d.Shader("uv_bump")
-shinesh = pi3d.Shader("uv_reflect")
-matsh = pi3d.Shader("mat_reflect")
+from global_shaders import *
 
 sc = Scene('alpine', MSIZE, NX, NZ)
 for i in range(NX):

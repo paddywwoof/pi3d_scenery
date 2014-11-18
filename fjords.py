@@ -15,9 +15,7 @@ SMOOTH_2 = -0.2
 ROUGH_1 = 0 # special behaviour
 ROUGH_2 = -1.2
 # load shaders
-shader = pi3d.Shader("uv_bump")
-shinesh = pi3d.Shader("uv_reflect")
-matsh = pi3d.Shader("mat_reflect")
+from global_shaders import *
 
 sc = Scene('fjords', MSIZE, NX, NZ)
 for i in range(5):

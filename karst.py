@@ -15,9 +15,7 @@ SMOOTH_2 = -0.4
 ROUGH_1 = 20
 ROUGH_2 = -0.8
 # load shaders
-shader = pi3d.Shader("uv_bump")
-shinesh = pi3d.Shader("uv_reflect")
-matsh = pi3d.Shader("mat_reflect")
+from global_shaders import *
 
 sc = Scene('karst', MSIZE, NX, NZ)
 for i in range(NX):
