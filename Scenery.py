@@ -164,10 +164,10 @@ CAMERA = pi3d.Camera(lens=(1.0, 10000.0, 55.0, 1.6))
 ####################
 #this block added for fast text changing
 CAMERA2D = pi3d.Camera(is_3d=False)
-myfont = pi3d.Font('fonts/FreeMonoBoldOblique.ttf', color = (255, 230, 128, 255),
+myfont = pi3d.Font('fonts/FreeSans.ttf', color = (255, 230, 128, 255),
                         codepoints='0123456789abcdefghijklmnopqrstuvwxyz. -:')
 myfont.blend = True
-tstring = "gold {:05d}oz {:02d}m{:02d}s -{:4.1f}km {:3.1f}kph ".format(score, 0, 0, 0.0, 0.0)
+tstring = "gold 00000oz 00m00s 0000000000000000"
 lasttm = 0.0
 tdel = 0.23
 mystring = pi3d.String(camera=CAMERA2D, font=myfont, is_3d=False, string=tstring)
@@ -220,8 +220,14 @@ while DISPLAY.loop_running():
     coin_dist -= vel
     coin_count -= 1
     if coin_dist < 0:
+      old_score = score
       score += 150 + coin_count
       coin_count = 0
+      ##################### auto progression !
+      if score > 2000 and old_score < 2000 and 'karst' in sc.path:
+        menu.selection = 3
+      elif score > 4000 and old_score < 4000 and 'fjords' in sc.path:
+        menu.selection = 2
   else: ####################### write up score
     mystring.draw()
     if random.random() < 0.0005:
