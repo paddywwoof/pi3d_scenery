@@ -208,7 +208,6 @@ while DISPLAY.loop_running():
     s_flg = False
   if s_flg or intro_count < 200: ################### intro screen
     skidoo.position(xm + dx * 15, ym, zm + dz * 15)
-    skidoo.rotateIncX(0.1)
     skidoo.rotateIncY(1.5)
     skidoo.draw()
     intro_count += 1
@@ -338,9 +337,13 @@ while DISPLAY.loop_running():
       fmap = None
       from alpine import *
     elif k==ord('a'):   #key A
+      rvel += 1.0
+    elif k==ord('d'):  #key D
+      rvel -= 1.0
+    elif k==ord('z'):   #key z
       menu.activate()
       menu.advance()
-    elif k==ord('d'):  #key D
+    elif k==ord('x'):  #key x
       menu.active = False
     elif k==27:  #Escape key
       mykeys.close()
