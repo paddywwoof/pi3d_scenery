@@ -36,6 +36,9 @@ sc.scenery_list['tree02'] = SceneryItem(1750, 0, 4300, ['tree1'], shader, textur
 sc.scenery_list['tree03'] = SceneryItem(3400, 0, 4150, ['hornbeam2'], shader, texture_flip=True, priority=4, 
                           put_on='rock_elev34', threshold = 650.0,
                           model_details={'model':'tree', 'w':100, 'd':50, 'n':20, 'maxs':6.0, 'mins':2.0})
+sc.scenery_list['cast01'] = SceneryItem(1750, 0, 1750, ['pigeon_tower'], shader, texture_flip=True, priority=4, 
+                          put_on='rock_elev11', threshold = 650.0,
+                          model_details={'model':'pigeon_tower', 'w':50, 'd':50, 'n':2, 'maxs':1.0, 'mins':0.5})
 
 
 try:
