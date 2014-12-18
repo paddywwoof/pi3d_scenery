@@ -14,6 +14,7 @@ SMOOTH_1 = 50
 SMOOTH_2 = -0.4
 ROUGH_1 = 20
 ROUGH_2 = -0.8
+ROUTE_FACTOR = 0.2
 # load shaders
 from global_shaders import *
 
@@ -74,3 +75,8 @@ try:
   f.close()
 except IOError:
   sc.do_pickle(FOG)
+
+route_march = [
+[400, 550], [500, 4500], [3400, 4500],[3500, 3500],[2500, 1500],
+[400, 1400],[4600, 1400],[2500, 2500],[3600, 2500]]
+route_num = 0

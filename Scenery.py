@@ -99,7 +99,7 @@ pi3d.Light(lightpos=(1, -1, -3), lightcol =(0.7, 0.7, 0.6), lightamb=(0.4, 0.3, 
 # load shaders
 flatsh = pi3d.Shader("uv_flat")
 
-from karst import *
+from fjords import *
 
 #myecube = pi3d.EnvironmentCube(900.0,"HALFCROSS")
 ectex = pi3d.loadECfiles("textures/ecubes","sbox")
@@ -116,11 +116,11 @@ refltex = pi3d.Texture(sc.path + '/stars3.png')
 coin.set_draw_details(matsh, [coin.buf[0].textures[0], refltex], 1.0, 0.6)
 
 #time checking
-chktm = 1.0
+CHKTM = 0.5
 lastchk = time.time()
 cleartm = 10.0
 lastclear = lastchk
-nextslope = lastchk + chktm
+nextslope = lastchk + CHKTM
 starttm = lastchk
 #physics
 MASS = 500.0
@@ -145,8 +145,12 @@ dist = 0.0
 rot = random.random() * 360.0
 tilt = 4.0
 avhgt = 11.0
-xm = random.random() * MSIZE * NX
-zm = random.random() * MSIZE * NZ
+if route_num >= 0:
+  xm = route_march[route_num][0]
+  zm = route_march[route_num][1]
+else:
+  xm = random.random() * MSIZE * NX
+  zm = random.random() * MSIZE * NZ
 dx = -math.sin(math.radians(rot))
 dz = math.cos(math.radians(rot))
 ym = 200.0
@@ -184,7 +188,7 @@ while DISPLAY.loop_running():
   ####################
   tm = time.time()
   #################### scenery loading
-  if tm > (lastchk + chktm):
+  if tm > (lastchk + CHKTM):
     xm, zm, cmap = sc.check_scenery(xm, zm)
     fmap = sc.scenery_list['rock_elev{}{}'.format(int(xm/MSIZE), int(zm/MSIZE))].shape
     lastchk = tm
@@ -279,6 +283,21 @@ while DISPLAY.loop_running():
           force = 0.0
         else:
           rvel = 0.0
+      if route_num >= 0: # following a route
+        # find vector towards current destination
+        rxr, rzr = xm - route_march[route_num][0], zm - route_march[route_num][1]
+        if rxr < (-MSIZE * NX / 2.0):
+          rxr += MSIZE * NX
+        elif rxr > (MSIZE * NX / 2.0):
+          rxr -= MSIZE * NX
+        if rzr < (-MSIZE * NZ / 2.0):
+          rzr += MSIZE * NZ
+        elif rzr > (MSIZE * NZ / 2.0):
+          rzr -= MSIZE * NZ
+        rvel += (dz * rxr - dx * rzr) * ROUTE_FACTOR * (rxr**2 + rzr**2)**-0.5
+        if abs(rxr) < 50 and abs(rzr) < 50:
+          route_num = (route_num + 1) % len(route_march)
+          print('x{:2.1f} z{:2.1f} targetx{:2.1f} targetz{:2.1f}'.format(xm, zm, route_march[route_num][0], route_march[route_num][1]))
       secs = tm - starttm
       mins = int(secs / 60.0)
       secs = int(secs - mins * 60)
@@ -287,7 +306,8 @@ while DISPLAY.loop_running():
       else:
         newtstring = "gold {:05d}oz {:02d}m{:02d}s {:4.1f}km {:3.1f}kph".format(score, mins, secs, dist, vel * 10)
       mystring.quick_change(newtstring)
-      nextslope = tm + chktm
+      
+      nextslope = tm + CHKTM
       #print(force, vel, MINV, factor_1, xm, zm)
 
   if menu.selection > 0 and not menu.active: # i.e. a menu option must have been selected
@@ -312,6 +332,10 @@ while DISPLAY.loop_running():
         break
       skidoo = pi3d.Model(file_string=sc.path + '/skidoo.obj')
       skidoo.set_shader(shader)
+      if route_num >= 0:
+        xm = route_march[route_num][0]
+        zm = route_march[route_num][1]
+
 
     intro_count = 0
     menu.selection = 0
@@ -345,6 +369,8 @@ while DISPLAY.loop_running():
       menu.advance()
     elif k==ord('x'):  #key x
       menu.active = False
+    elif k==ord('p'):  #key x
+      print('[{:3.0f}, {:3.0f}],'.format(xm, zm))
     elif k==27:  #Escape key
       mykeys.close()
       #mymouse.stop()
