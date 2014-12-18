@@ -99,7 +99,7 @@ pi3d.Light(lightpos=(1, -1, -3), lightcol =(0.7, 0.7, 0.6), lightamb=(0.4, 0.3, 
 # load shaders
 flatsh = pi3d.Shader("uv_flat")
 
-from fjords import *
+from karst import *
 
 #myecube = pi3d.EnvironmentCube(900.0,"HALFCROSS")
 ectex = pi3d.loadECfiles("textures/ecubes","sbox")
